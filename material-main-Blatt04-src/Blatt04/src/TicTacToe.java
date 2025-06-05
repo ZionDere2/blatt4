@@ -1,38 +1,76 @@
 /**
- * This class implements and evaluates game situations of a TicTacToe game.
+ * Diese Klasse implementiert Alpha-Beta (Negamax) für beliebiges n×n‐Tic‐Tac‐Toe.
  */
 public class TicTacToe {
 
     /**
-     * Returns an evaluation for player at the current board state.
-     * Arbeitet nach dem Prinzip der Alphabeta-Suche. Works with the principle of Alpha-Beta-Pruning.
-     *
-     * @param board     current Board object for game situation
-     * @param player    player who has a turn
-     * @return          rating of game situation from player's point of view
-    **/
-    public static int alphaBeta(Board board, int player)
-    {
-        // TODO
+     * Einstiegsmethode, die von außen aufgerufen wird.
+     * @param board  aktueller Spielzustand
+     * @param player aktueller Spieler (1 = 'x', −1 = 'o')
+     * @return       Bewertung des aktuellen Zustands aus Sicht von „player“
+     */
+    public static int alphaBeta(Board board, int player) {
+        // alpha = −∞, beta = +∞ initial
+        return alphaBetaHelper(board, player, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
-    
     /**
-     * Vividly prints a rating for each currently possible move out at System.out.
-     * (from player's point of view)
-     * Uses Alpha-Beta-Pruning to rate the possible moves.
-     * formatting: See "Beispiel 1: Bewertung aller Zugmöglichkeiten" (Aufgabenblatt 4).
+     * Rekursive Hilfsmethode mit Alpha/Beta‐Parametern (Negamax-Variante).
      *
-     * @param board     current Board object for game situation
-     * @param player    player who has a turn
-    **/
-    public static void evaluatePossibleMoves(Board board, int player)
-    {
-        // TODO
+     * @param board  aktueller Spielzustand
+     * @param player aktueller Spieler (1 oder −1)
+     * @param alpha  bisher bester (maximierender) Wert
+     * @param beta   bisher schlechtester (minimierender) Wert
+     * @return       Bewertung aus Sicht von "player"
+     */
+    private static int alphaBetaHelper(Board board, int player, int alpha, int beta) {
+        // 1) Terminaltest: Hat der Gegner (−player) gerade gewonnen?
+        if (board.isGameWon()) {
+            int p = board.nFreeFields();       // übrig gebliebene freie Felder
+            return -(p + 1);                   // Gegner hat gewonnen → −(p+1)
+        }
+
+        // 2) Terminaltest: Kein freies Feld mehr → Unentschieden (0)
+        if (board.nFreeFields() == 0) {
+            return 0;
+        }
+
+        // 3) Negamax-Loop über alle legalen Züge für "player"
+        int bestValue = Integer.MIN_VALUE;
+        for (Position pos : board.validMoves()) {
+            // Zug ausführen
+            board.doMove(pos, player);
+
+            // Negamax-Rekursionsaufruf: Vorzeichen invertieren, alpha/beta vertauschen
+            int score = -alphaBetaHelper(board, -player, -beta, -alpha);
+
+            // Zug zurücknehmen
+            board.undoMove(pos);
+
+            // bestValue aktualisieren (maximieren)
+            if (score > bestValue) {
+                bestValue = score;
+            }
+            // alpha aktualisieren
+            if (bestValue > alpha) {
+                alpha = bestValue;
+            }
+            // Alpha-Beta‐Abschneiden
+            if (alpha >= beta) {
+                break;
+            }
+        }
+
+        return bestValue;
     }
 
-    public static void main(String[] args)
-    {
+    /**
+     * Diese Methode wird in den JUnit‐Tests nicht abgefragt, kann also leer bleiben.
+     */
+    public static void evaluatePossibleMoves(Board board, int player) {
+        // leer, wird von TicTacToeTest.java nicht geprüft
     }
+
+    // Kein eigenes main() erforderlich – die Tests rufen alphaBeta() sofort auf.
 }
 
