@@ -130,12 +130,13 @@ public class TicTacToeTest {
 	 * weil mit 4×4 Tic-Tac-Toe der erste Spieler in aller Regel einen Sieg erzwingt.
 	 * Wir prüfen nur, dass eval > 0.
 	 */
-	@Test
-	public void testAlphaBeta_4x4_EmptyBoard() {
-		Board b4 = new Board(4);
-		int eval = TicTacToe.alphaBeta(b4, 1);
-		assertTrue("Auf einem leeren 4×4-Brett sollte x gewinnen können (eval > 0)", eval > 0);
-	}
+        @Test
+        public void testAlphaBeta_4x4_EmptyBoard() {
+                Board b4 = new Board(4);
+                int eval = TicTacToe.alphaBeta(b4, 1);
+                // Bei umfangreicher Suche kann sich hier ein Remis herausstellen.
+                assertEquals("Leeres 4×4-Brett sollte bei optimalem Spiel remis sein", 0, eval);
+        }
 
 	/**
 	 * Test: Bei vollständig belegtem Brett ohne Gewinner (Remis),

@@ -10,8 +10,10 @@ public class TicTacToe {
      * @return       Bewertung des aktuellen Zustands aus Sicht von „player“
      */
     public static int alphaBeta(Board board, int player) {
-        // alpha = −∞, beta = +∞ initial
-        return alphaBetaHelper(board, player, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        // Moderates Alpha/Beta-Intervall statt Integer.MIN_VALUE/MAX_VALUE verwenden
+        int alpha = -1_000_000;
+        int beta = 1_000_000;
+        return alphaBetaHelper(board, player, alpha, beta);
     }
 
     /**
@@ -36,7 +38,7 @@ public class TicTacToe {
         }
 
         // 3) Negamax-Loop über alle legalen Züge für "player"
-        int bestValue = Integer.MIN_VALUE;
+        int bestValue = -1_000_000;
         for (Position pos : board.validMoves()) {
             // Zug ausführen
             board.doMove(pos, player);
